@@ -33,11 +33,11 @@ class Hero:
         self.cameraOn = False 
 
 #------зміна режиму камери-----  
-    def changeMode(self): 
+    def changeCamera(self): 
         if self.cameraOn: 
             self.cameraUnbind() 
         else: 
-            self.cameraBind 
+            self.cameraBind()
 
 #-------поворот камери--------
     def turnLeft(self): 
@@ -58,13 +58,30 @@ class Hero:
         self.hero.setPos(pos) 
  
     def try_move(self, angle): 
-        ... 
+        pos = self.lookAt(angle)
+        if self.land.isEmpty(pos):
+            pos = self.land.findHighestEmpty(pos)
+            self.hero.setPos(pos) 
+        else:
+            pos = pos[0], pos[1], pos[2]+1
+            if self.land.isEmpty(pos):
+                self.hero.setPos(pos)
+
+    
  
     def move_to(self, angle): 
         if self.spectatorMode: 
             self.just_move(angle) 
         else: 
-            self.try_move(angle) 
+            self.try_move(angle)
+
+    def changeMode(self):
+        #if self.spectatorMode:
+            #self.spectatorMode = False
+        #else:
+            #self.spectatorMode = True
+        
+        self.spectatorMode = not self.spectatorMode
  
     def lookAt(self, angle): 
         x = round(self.hero.getX()) 
@@ -130,7 +147,9 @@ class Hero:
 #------------приводимо функції вище в дію-------- 
     def acceptEvents(self): 
         base.accept(change_mode_key, self.changeMode) 
+        base.accept(change_camera_key, self.changeCamera) 
  
+
         base.accept(turn_left_key, self.turnLeft) 
         base.accept(turn_left_key +'-repeat', self.turnLeft) 
         base.accept(turn_right_key, self.turnRigth) 
@@ -150,8 +169,9 @@ class Hero:
         base.accept(right_key +'-repeat', self.right) 
 
 #--------вказуємо на яку кнопку має виконуватись функція--------- 
-change_mode_key = 'q' 
- 
+change_camera_key = 'q' 
+change_mode_key = "e"
+
 turn_left_key = 'arrow_left' 
 turn_right_key = 'arrow_right' 
 turn_up_key = 'arrow_up' 
